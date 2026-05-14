@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    function isOwner(data) {
+      return isSignedIn() && data.userId == request.auth.uid;
+    }
+
+    // --- Validators ---
+    function isValidPing(data) {
+      return data.keys().hasAll(['routeId', 'stopId', 'stopName', 'timestamp', 'userId', 'userName'])
+        && data.keys().size() == 6
+        && data.routeId is string && data.routeId.size() <= 128
+        && data.stopId is string && data.stopId.size() <= 128
+        && data.stopName is string && data.stopName.size() <= 100
+        && data.userId == request.auth.uid
+        && data.userName is string && data.userName.size() <= 50
+        && data.timestamp == request.time;
+    }
+
+    function isValidAlert(data) {
+      return data.keys().hasAll(['routeId', 'type', 'message', 'timestamp', 'userId', 'userName'])
+        && data.keys().size() == 6
+        && data.routeId is string && data.routeId.size() <= 128
+        && data.type in ['delayed', 'cancelled', 'other']
+        && data.message is string && data.message.size() <= 500
+        && data.userId == request.auth.uid
+        && data.userName is string && data.userName.size() <= 50
+        && data.timestamp == request.time;
+    }
+
+    // --- Collections ---
+    
+    // Routes: Global list of routes. Read-only for users.
+    match /routes/{routeId} {
+      allow get, list: if true;
+      allow create, update, delete: if false; // Only via console/admin for now
+      
+      // Pings: Subcollection of routes
+      match /pings/{pingId} {
+        allow list: if true;
+        allow get: if true;
+        allow create: if isSignedIn() 
+          && isValidId(routeId)
+          && isValidPing(incoming())
+          && exists(/databases/$(database)/documents/routes/$(routeId));
+        allow update, delete: if false; // Pings are immutable
+      }
+
+      // Alerts: Subcollection of routes
+      match /alerts/{alertId} {
+        allow list: if true;
+        allow get: if true;
+        allow create: if isSignedIn()
+          && isValidId(routeId)
+          && isValidAlert(incoming())
+          && exists(/databases/$(database)/documents/routes/$(routeId));
+        allow delete: if isOwner(existing());
+        allow update: if false; // Alerts are currently one-off
+      }
+    }
+
+    // Users: Basic profiles
+    match /users/{userId} {
+      allow get: if true;
+      allow create, update: if isSignedIn() && userId == request.auth.uid
+        && incoming().keys().hasAll(['userName', 'updatedAt'])
+        && incoming().userName is string && incoming().userName.size() <= 50
+        && incoming().updatedAt == request.time;
+    }
+  }
+}

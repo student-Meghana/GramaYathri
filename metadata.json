@@ -1,0 +1,12 @@
+{
+  "name": "GramaYathri",
+  "description": "A crowdsourced rural bus tracking app. Users share live updates on bus progress through specific routes.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "Real-time tracking",
+    "Community pings",
+    "Social route addition"
+  ]
+}

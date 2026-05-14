@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "Route": {
+      "title": "Route",
+      "description": "A bus route containing multiple stops",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "stops": { 
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["name", "stops"]
+    },
+    "Ping": {
+      "title": "Ping",
+      "description": "A community-sourced update for a bus location",
+      "type": "object",
+      "properties": {
+        "routeId": { "type": "string" },
+        "stopId": { "type": "string" },
+        "stopName": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" }
+      },
+      "required": ["routeId", "stopId", "timestamp", "userId", "userName"]
+    },
+    "Alert": {
+      "title": "Alert",
+      "description": "Service alerts like delays or cancellations",
+      "type": "object",
+      "properties": {
+        "routeId": { "type": "string" },
+        "type": { "type": "string", "enum": ["delayed", "cancelled", "other"] },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" }
+      },
+      "required": ["routeId", "type", "timestamp", "userId", "userName"]
+    }
+  },
+  "firestore": {
+    "routes": {
+      "schema": "Route",
+      "description": "Collection of available bus routes"
+    },
+    "routes/{routeId}/pings": {
+      "schema": "Ping",
+      "description": "Recent pings for a specific route"
+    },
+    "routes/{routeId}/alerts": {
+      "schema": "Alert",
+      "description": "Alerts for a specific route"
+    }
+  }
+}

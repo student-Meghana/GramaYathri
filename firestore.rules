@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Routes collection
+    match /routes/{routeId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      
+      // Pings sub-collection (for live tracking)
+      match /pings/{pingId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null;
+      }
+      
+      // Alerts sub-collection
+      match /alerts/{alertId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null;
+      }
+    }
+  }
+}
