@@ -1,21 +1,20 @@
-# 🚌 GramaYathri - Rural Bus Tracker
+# GramaYathri - Rural Bus Tracker
 
 **GramaYathri** is a community-driven Android application designed to bridge the gap in rural transportation. It provides real-time bus tracking, fare estimation, and emergency services specifically tailored for village communities.
 
 ---
 
-## 🌟 Key Features
+##  Key Features
 
-### 🌍 Live Rural Bus Map
+###  Live Rural Bus Map
 *   **Real-Time Tracking:** Visualize moving buses on a live map (requires Google Maps API).
 *   **Community Reporting:** Passenger-driven updates ("I'm Here") ensure accurate locations even without dedicated GPS hardware on buses.
-*   **Status Indicators:** Buses are color-coded based on their schedule (🟢 On Time, 🟡 Slight Delay, 🔴 Major Delay).
-
+  
 ### 📵 Offline SMS Updates
 *   **Smart Updates:** No internet? No problem. Generate and send a backup SMS update to any contact.
 *   **Automatic ETA:** The app automatically calculates and includes the Expected Time of Arrival (ETA) to your destination in the text message.
 
-### 🎫 Fare Calculator
+###  Fare Calculator
 *   **Distance-Based Estimation:** Quickly calculate the fare between any two stops on a route.
 *   **Route Search:** Find buses by searching for specific stops or route numbers.
 
